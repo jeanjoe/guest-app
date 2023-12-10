@@ -3,16 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TicketController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth']);;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $pageSize = $request->get('pageSize', 20);
+        $page = $request->get('page', 1);
+
+        $tickets = Ticket::with('service')->where([['created_at', '>=', Carbon::today()], ['expiry_date', '>=', Carbon::today()]])->orderBy('created_at', 'desc')->paginate($pageSize);
+
+        return Inertia::render('Tickets/Index', compact('pageSize', 'page', 'tickets'));
     }
 
     /**

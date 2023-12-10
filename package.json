@@ -23,6 +23,8 @@
         "@ant-design/icons": "^5.2.6",
         "antd": "^5.11.4",
         "lodash": "^4.17.21",
-        "moment": "^2.29.4"
+        "moment": "^2.29.4",
+        "prop-types": "^15.8.1",
+        "react-to-print": "^2.14.15"
     }
 }

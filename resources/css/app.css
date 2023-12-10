@@ -1,3 +1,44 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+ body {
+    padding: 0 !important;
+    margin: 0 !important;
+    background-image: url('../js/Assets/page-background.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+ }
+
+ .text-center {
+   text-align: center;
+ }
+
+ .text-start {
+   text-align: left !important;
+ }
+
+ .text-end {
+   text-align: right !important;
+ }
+
+ .w-100 {
+   width: 100% !important;
+ }
+
+ .text-primary {
+   color: #016e57 !important;
+ }
+
+ .m-1 {
+   margin-top: 0.85em;
+   margin-bottom: 0.85em;
+ }
+
+ .text-uppercase {
+   text-transform: uppercase !important;
+ }
+
+ .fw-bold {
+  font-weight: bold;
+ }
