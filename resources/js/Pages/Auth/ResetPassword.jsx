@@ -1,90 +1,120 @@
-import { useEffect } from 'react';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Head, useForm } from '@inertiajs/react';
+import GuestLayout from "@/Layouts/GuestLayout";
+import { Link, router } from "@inertiajs/react";
+import { Alert, Button, Card, Col, Form, Input, Row } from "antd";
+import { isEmpty } from "lodash";
+import { useEffect, useState } from "react";
 
-export default function ResetPassword({ token, email }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        token: token,
-        email: email,
-        password: '',
-        password_confirmation: '',
-    });
+export default function ResetPassword({ token, email, ...props }) {
+    const [form] = Form.useForm();
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [processing, setProcessing] = useState(false);
 
     useEffect(() => {
-        return () => {
-            reset('password', 'password_confirmation');
-        };
-    }, []);
+        setErrorMessage(props?.errors?.error);
+        if (!isEmpty(props.errors)) {
+            const errors = Object.keys(props.errors).map((objKey) => ({
+                name: objKey,
+                errors: [props.errors[objKey]],
+            }));
+            form.setFields(errors);
+        }
+    }, [props.errors]);
 
-    const submit = (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        form.setFieldsValue({ email });
+    }, [email]);
 
-        post(route('password.store'));
+    const submit = (data) => {
+        setErrorMessage(null);
+        router.post(
+            route("password.store"),
+            { ...data, token },
+            {
+                onProgress: setProcessing(true),
+                onFinish: setProcessing(false),
+            }
+        );
     };
 
     return (
         <GuestLayout>
-            <Head title="Reset Password" />
+            <Row justify="center">
+                <Col md={{ span: 8 }}>
+                    {errorMessage && (
+                        <Alert showIcon closable message={errorMessage} type="error" />
+                    )}
+                    <h3 className="text-center text-primary">
+                        RESET YOUR PASSWORD
+                    </h3>
+                    <Card bordered>
+                        <Form
+                            disabled={processing}
+                            layout="vertical"
+                            className="text-start"
+                            form={form}
+                            onFinish={submit}
+                        >
+                            <Form.Item
+                                label="Email"
+                                name="email"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Email is Required",
+                                    },
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                            <Form.Item
+                                label="Password"
+                                name="password"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please input your password!",
+                                    },
+                                ]}
+                            >
+                                <Input.Password />
+                            </Form.Item>
 
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                    />
+                            <Form.Item
+                                label="Password"
+                                name="password_confirmation"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message:
+                                            "Please Confirm your password!",
+                                    },
+                                ]}
+                            >
+                                <Input.Password />
+                            </Form.Item>
 
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
+                            <Button
+                                className="w-100"
+                                htmlType="submit"
+                                type="primary"
+                                loading={processing}
+                            >
+                                Reset Password
+                            </Button>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        isFocused={true}
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
-
-                    <TextInput
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                    />
-
-                    <InputError message={errors.password_confirmation} className="mt-2" />
-                </div>
-
-                <div className="flex items-center justify-end mt-4">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Reset Password
-                    </PrimaryButton>
-                </div>
-            </form>
+                            <div className="text-center m-1">
+                                <Link
+                                    href={route("login")}
+                                    className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                                >
+                                    Login Page
+                                </Link>
+                            </div>
+                        </Form>
+                    </Card>
+                </Col>
+            </Row>
         </GuestLayout>
     );
 }

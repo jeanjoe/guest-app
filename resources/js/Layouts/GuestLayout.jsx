@@ -1,18 +1,39 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import { Link } from '@inertiajs/react';
+import { Image, Layout } from "antd";
+import DCICLogo from "../Assets/dcic_logo.png";
+import { Link } from "@inertiajs/react";
 
-export default function Guest({ children }) {
+export default function GuestLayout({ children }) {
     return (
-        <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
-                </Link>
-            </div>
-
-            <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+        <Layout
+            style={{
+                minHeight: "100vh",
+                backgroundColor: "rgba(178, 166, 119, 0.34)",
+            }}
+        >
+            <Layout.Content style={{ padding: "3em", overflow: "initial" }}>
+                <div className="text-center">
+                    <Link href={route('welcome')}>
+                    <Image src={DCICLogo} preview={false} style={{ background: "#FF9209", padding: 4, borderRadius: 4 }} height={80} />
+                    </Link>
+                </div>
+                <div className="text-center" style={{ marginBottom: "2em" }}>
+                    <h1 className="text-center" style={{ color: "#fff" }}>
+                        GUEST SELF-SERVICE POINT
+                    </h1>
+                </div>
                 {children}
-            </div>
-        </div>
+            </Layout.Content>
+            <Layout.Footer
+                style={{
+                    textAlign: "center",
+                    borderTop: "2px solid #FF9209",
+                    background: "#016e57",
+                    fontSize: 12,
+                    color: "#fff",
+                }}
+            >
+                &copy;{new Date().getFullYear()} - CREATED BY MANZEDE BENARD
+            </Layout.Footer>
+        </Layout>
     );
 }

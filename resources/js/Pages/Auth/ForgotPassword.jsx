@@ -1,50 +1,63 @@
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Head, useForm } from '@inertiajs/react';
+import GuestLayout from "@/Layouts/GuestLayout";
+import { Head, router } from "@inertiajs/react";
+import { Alert, Button, Card, Col, Form, Input, Row } from "antd";
+import { isEmpty, map } from "lodash";
+import { useEffect, useState } from "react";
 
-export default function ForgotPassword({ status }) {
-    const { data, setData, post, processing, errors } = useForm({
-        email: '',
-    });
+export default function ForgotPassword({ status, ...props }) {
+    const [errorMessage, setErrorMessage] = useState(null);
 
-    const submit = (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        if (!isEmpty(props.errors)) {
+            setErrorMessage(props.errors?.[Object.keys(props.errors)?.[0]]);
+        } else setErrorMessage(null);
+    }, [props.errors]);
 
-        post(route('password.email'));
+    const submit = (data) => {
+        router.post(route("password.email", data));
     };
 
     return (
         <GuestLayout>
-            <Head title="Forgot Password" />
+            <Row justify="center">
+                <Col md={{ span: 8 }}>
+                    <Card>
+                        <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                            Forgot your password? No problem. Just let us know
+                            your email address and we will email you a password
+                            reset link that will allow you to choose a new one.
+                        </div>
 
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Forgot your password? No problem. Just let us know your email address and we will email you a password
-                reset link that will allow you to choose a new one.
-            </div>
+                        {status && <Alert message={status} />}
+                        {errorMessage && (
+                            <Alert showIcon type="error" message={errorMessage} style={{ marginBottom: 4, marginTop: 4}} />
+                        )}
 
-            {status && <div className="mb-4 font-medium text-sm text-green-600 dark:text-green-400">{status}</div>}
+                        <Form onFinish={submit} layout="vertical">
+                            <Form.Item
+                                name="email"
+                                label="EMAIL"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Email is Required",
+                                    },
+                                ]}
+                            >
+                                <Input type="email" />
+                            </Form.Item>
 
-            <form onSubmit={submit}>
-                <TextInput
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={data.email}
-                    className="mt-1 block w-full"
-                    isFocused={true}
-                    onChange={(e) => setData('email', e.target.value)}
-                />
-
-                <InputError message={errors.email} className="mt-2" />
-
-                <div className="flex items-center justify-end mt-4">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Email Password Reset Link
-                    </PrimaryButton>
-                </div>
-            </form>
+                            <Button
+                                htmlType="submit"
+                                type="primary"
+                                className="w-100"
+                            >
+                                Email Password Reset Link
+                            </Button>
+                        </Form>
+                    </Card>
+                </Col>
+            </Row>
         </GuestLayout>
     );
 }
